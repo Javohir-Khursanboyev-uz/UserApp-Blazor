@@ -20,7 +20,7 @@ public class UserService (IUserRepository userRepository) : IUserService
         return await userRepository.DeleteAsync(id);
     }
 
-    public async Task<IEnumerable<User>> GetByAllAsync()
+    public async Task<IEnumerable<User>> GetAllAsync()
     {
         return await userRepository.SelectAllAsync();
     }
