@@ -8,22 +8,28 @@ public class UserRepository(AppDbContext context) : IUserRepository
 {
     public async Task<User> InsertAsync(User user)
     {
-        return (await context.Users.AddAsync(user)).Entity;
+        var createdUser = (await context.Users.AddAsync(user)).Entity;
+        await context.SaveChangesAsync();
+        return createdUser;
     }
 
-    public async Task<User> UpdateAsync(User user)
+    public async Task<User> UpdateAsync(long id, User user)
     {
-        return await Task.FromResult(context.Set<User>().Update(user).Entity);
+        user.Id = id;
+        var updatedUser = context.Users.Update(user).Entity;
+        await context.SaveChangesAsync();
+        return updatedUser;
     }
 
+    public async Task<bool> DeleteAsync(long id)
+    {
+        var existUser = await context.Users.Where(u => u.Id == id).FirstAsync();
+        context.Users.Remove(existUser);
+        return await context.SaveChangesAsync() > 0;
+    }
 
     public async Task<IEnumerable<User>> SelectAllAsync()
     {
         return await context.Users.ToListAsync();
-    }
-
-    public async Task<bool> SaveAsync()
-    {
-        return await context.SaveChangesAsync() > 0;
     }
 }

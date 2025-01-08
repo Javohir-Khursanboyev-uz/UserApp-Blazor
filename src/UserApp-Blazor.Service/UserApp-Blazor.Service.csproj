@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\UserApp-Blazor.Data\UserApp-Blazor.Data.csproj" />
     <ProjectReference Include="..\UserApp-Blazor.Domain\UserApp-Blazor.Domain.csproj" />
   </ItemGroup>
 

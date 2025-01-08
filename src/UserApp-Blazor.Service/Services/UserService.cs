@@ -1,26 +1,27 @@
 ﻿using UserApp_Blazor.Domain.Entities;
+using UserApp_Blazor.Data.Repositories;
 
 namespace UserApp_Blazor.Service.Services;
 
-public class UserService : IUserService
+public class UserService (IUserRepository userRepository) : IUserService
 {
-    public Task<User> CreateAsync(User user)
+    public async Task<User> CreateAsync(User user)
     {
-        throw new NotImplementedException();
+        return await userRepository.InsertAsync(user);
     }
 
-    public Task<User> DeleteAsync(long id)
+    public async Task<User> UpdateAsync(long id, User user)
     {
-        throw new NotImplementedException();
+        return await userRepository.UpdateAsync(id, user);
     }
 
-    public Task<IEnumerable<User>> GetByAllAsync()
+    public async Task<bool> DeleteAsync(long id)
     {
-        throw new NotImplementedException();
+        return await userRepository.DeleteAsync(id);
     }
 
-    public Task<User> UpdateAsync(long id, User user)
+    public async Task<IEnumerable<User>> GetByAllAsync()
     {
-        throw new NotImplementedException();
+        return await userRepository.SelectAllAsync();
     }
 }
