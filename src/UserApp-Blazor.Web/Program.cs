@@ -1,10 +1,15 @@
 using UserApp_Blazor.Web.Components;
+using UserApp_Blazor.Web.Service.Extensions;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddWebServices(builder.Configuration);
+
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
 
 var app = builder.Build();
 
