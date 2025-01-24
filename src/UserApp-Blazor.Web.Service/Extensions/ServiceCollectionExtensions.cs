@@ -11,7 +11,7 @@ public static class ServiceCollectionExtensions
         var apiUrl = configuration["Api:Url"]!;
         services.AddHttpClient("ApiClient", client =>
         {
-            client.BaseAddress = new Uri(apiUrl, UriKind.Absolute);
+            client.BaseAddress = new Uri(apiUrl);
         });
         services.AddScoped<IUserService, UserService>();
 

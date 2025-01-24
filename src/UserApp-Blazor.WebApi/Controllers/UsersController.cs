@@ -2,7 +2,7 @@
 using UserApp_Blazor.Domain.Entities;
 using UserApp_Blazor.Service.Services;
 
-[Route("[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class UsersController(IUserService userService) : ControllerBase
 {

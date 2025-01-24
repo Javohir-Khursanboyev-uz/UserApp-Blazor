@@ -6,11 +6,11 @@ namespace UserApp_Blazor.Web.Service.Services;
 public class UserService : IUserService
 {
     private readonly HttpClient httpClient;
-    private const string baseUri = "/api/users";
+    private const string baseUri = "/api/Users";
 
-    public UserService(HttpClient httpClient)
+    public UserService(IHttpClientFactory httpClientFactory)
     {
-        this.httpClient = httpClient;   
+        httpClient = httpClientFactory.CreateClient("ApiClient");
     }
 
     public async Task<User> CreateAsync(User user)
