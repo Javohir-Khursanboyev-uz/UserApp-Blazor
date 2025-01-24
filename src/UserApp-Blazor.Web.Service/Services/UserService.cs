@@ -37,6 +37,14 @@ public class UserService : IUserService
 
     public async Task<IEnumerable<User>> GetAllAsync()
     {
-        return await httpClient.GetFromJsonAsync<IEnumerable<User>>(baseUri) ?? Array.Empty<User>();
+
+        var response = await httpClient.GetFromJsonAsync<Response>(baseUri);
+        if (response is not null)
+        {
+            var usersJson = System.Text.Json.JsonSerializer.Serialize(response.Data);
+            return System.Text.Json.JsonSerializer.Deserialize<IEnumerable<User>>(usersJson) ?? Enumerable.Empty<User>(); ;
+        }
+
+        return Enumerable.Empty<User>();
     }
 }   

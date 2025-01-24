@@ -28,8 +28,8 @@
                     <td>@user.Email</td>
                     <td>@user.About</td>
                     <td>
-                        <button class="btn btn-primary btn-sm" @onclick="() => EditUser(user)">Edit</button>
-                        <button class="btn btn-danger btn-sm" @onclick="() => DeleteUser(user)">Delete</button>
+                        <button class="btn btn-primary btn-sm">Edit</button>
+                        <button class="btn btn-danger btn-sm">Delete</button>
                     </td>
                 </tr>
             }
@@ -43,39 +43,9 @@
     </tbody>
 </table>
 
-<!-- Foydalanuvchi qo'shish yoki yangilash formasi -->
-<div class="card mt-3">
-    <div class="card-body">
-        <h5>@(IsEditing ? "Edit User" : "Add User")</h5>
-        <EditForm Model="CurrentUser" OnValidSubmit="SaveUser">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-            <div class="mb-3">
-                <label>Name</label>
-                <InputText class="form-control" @bind-Value="CurrentUser.Name" />
-            </div>
-            <div class="mb-3">
-                <label>Email</label>
-                <InputText class="form-control" @bind-Value="CurrentUser.Email" />
-            </div>
-            <div class="mb-3">
-                <label>About</label>
-                <InputTextArea class="form-control" @bind-Value="CurrentUser.About" />
-            </div>
-            <button class="btn btn-success">@("Save")</button>
-            @if (IsEditing)
-            {
-                <button type="button" class="btn btn-secondary ms-2" @onclick="CancelEdit">Cancel</button>
-            }
-        </EditForm>
-    </div>
-</div>
-
 @code {
-    private List<User> Users = new();
-    private User CurrentUser = new();
-    private bool IsEditing = false;
-
+    private IEnumerable<User> Users = Enumerable.Empty<User>();
+  
     protected override async Task OnInitializedAsync()
     {
         await LoadUsers();
@@ -83,57 +53,6 @@
 
     private async Task LoadUsers()
     {
-        Users = (await UserService.GetAllAsync()).ToList();
-    }
-
-    private void EditUser(User user)
-    {
-        CurrentUser = new User
-            {
-                Id = user.Id,
-                Name = user.Name,
-                Email = user.Email,
-                About = user.About
-            };
-        IsEditing = true;
-    }
-
-    private async Task SaveUser()
-    {
-        if (IsEditing)
-        {
-            await UserService.UpdateAsync(CurrentUser.Id, CurrentUser);
-        }
-        else
-        {
-            await UserService.CreateAsync(CurrentUser);
-        }
-
-        await LoadUsers();
-        ResetForm();
-    }
-
-    private async Task DeleteUser(User user)
-    {
-       // var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete user with ID {user.Id}?");
-
-        if (true)
-        {
-            // Foydalanuvchini o'chirish
-            await UserService.DeleteAsync(user.Id);
-            await LoadUsers();  // Yangi ro'yxatni yuklash
-        }
-    }
-
-
-    private void CancelEdit()
-    {
-        ResetForm();
-    }
-
-    private void ResetForm()
-    {
-        CurrentUser = new User();
-        IsEditing = false;
+        Users = (await UserService.GetAllAsync());
     }
 }
