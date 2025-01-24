@@ -1,26 +1,42 @@
-﻿using UserApp_Blazor.Domain.Entities;
+﻿using System.Net.Http.Json;
+using UserApp_Blazor.Domain.Entities;
 
 namespace UserApp_Blazor.Web.Service.Services;
 
 public class UserService : IUserService
 {
-    public Task<User> CreateAsync(User user)
+    private readonly HttpClient httpClient;
+    private const string baseUri = "/api/users";
+
+    public UserService(HttpClient httpClient)
     {
-        throw new NotImplementedException();
+        this.httpClient = httpClient;   
     }
 
-    public Task<bool> DeleteAsync(long id)
+    public async Task<User> CreateAsync(User user)
     {
-        throw new NotImplementedException();
+        var response = await httpClient.PostAsJsonAsync(baseUri, user);
+        response.EnsureSuccessStatusCode();
+        return (await response.Content.ReadFromJsonAsync<User>())!;
     }
 
-    public Task<IEnumerable<User>> GetAllAsync()
+    public async Task<User> UpdateAsync(long id, User user)
     {
-        throw new NotImplementedException();
+        var updateUri = $"{baseUri}/{id}";
+        var response = await httpClient.PutAsJsonAsync(updateUri, user);
+        response.EnsureSuccessStatusCode();
+        return (await response.Content.ReadFromJsonAsync<User>())!;
     }
 
-    public Task<User> UpdateAsync(long id, User user)
+    public async Task<bool> DeleteAsync(long id)
     {
-        throw new NotImplementedException();
+        var deleteUri = $"{baseUri}/{id}";
+        var response = await httpClient.DeleteAsync(deleteUri);
+        return response.IsSuccessStatusCode;
     }
-}
+
+    public async Task<IEnumerable<User>> GetAllAsync()
+    {
+        return await httpClient.GetFromJsonAsync<IEnumerable<User>>(baseUri) ?? Array.Empty<User>();
+    }
+}   
