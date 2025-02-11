@@ -1,4 +1,4 @@
-﻿namespace UserApp_Blazor.Service.Exceptions;
+﻿namespace UserApp_Blazor.Shared.Exceptions;
 
 public class AlreadyExistException : Exception
 {

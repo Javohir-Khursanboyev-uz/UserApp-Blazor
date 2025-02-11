@@ -16,16 +16,13 @@ public class UserService : IUserService
     public async Task<User> CreateAsync(User user)
     {
         var response = await httpClient.PostAsJsonAsync(baseUri, user);
-        response.EnsureSuccessStatusCode();
-
         var apiResponse = await response.Content.ReadFromJsonAsync<Response>();
-        if (apiResponse is not null && apiResponse.Data is not null)
-        {
-            var userJson = System.Text.Json.JsonSerializer.Serialize(apiResponse.Data);
-            return System.Text.Json.JsonSerializer.Deserialize<User>(userJson)!;
-        }
 
-        throw new Exception("Failed to create user.");
+        if (!response.IsSuccessStatusCode || apiResponse is null)
+            throw new Exception(apiResponse?.Message ?? "Failed to fetch users.");
+
+        var userJson = System.Text.Json.JsonSerializer.Serialize(apiResponse.Data);
+        return System.Text.Json.JsonSerializer.Deserialize<User>(userJson)!;
     }
 
     public async Task<User> UpdateAsync(long id, User user)
@@ -41,22 +38,22 @@ public class UserService : IUserService
             return System.Text.Json.JsonSerializer.Deserialize<User>(userJson)!;
         }
 
-        throw new Exception("Failed to update user.");
+        throw new Exception(apiResponse?.Message);
     }
 
     public async Task<bool> DeleteAsync(long id)
     {
         var response = await httpClient.DeleteAsync($"{baseUri}/{id}");
-        response.EnsureSuccessStatusCode();
-
         var apiResponse = await response.Content.ReadFromJsonAsync<Response>();
+
+        if (!response.IsSuccessStatusCode || apiResponse is null)
+            throw new Exception(apiResponse?.Message ?? "Failed to fetch users.");
 
         return apiResponse is not null && apiResponse.StatusCode == 200;
     }
 
     public async Task<IEnumerable<User>> GetAllAsync()
     {
-
         var response = await httpClient.GetFromJsonAsync<Response>(baseUri);
         if (response is not null)
         {

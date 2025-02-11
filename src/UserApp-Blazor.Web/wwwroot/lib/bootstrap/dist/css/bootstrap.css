@@ -12054,4 +12054,13 @@ textarea.form-control-lg {
   }
 }
 
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
 /*# sourceMappingURL=bootstrap.css.map */

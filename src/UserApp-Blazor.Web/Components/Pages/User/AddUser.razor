@@ -9,6 +9,14 @@
     <div class="card shadow-lg p-4">
         <h3 class="text-center mb-4">Create New User</h3>
 
+        <!-- Xatolik xabari -->
+        @if (showError)
+        {
+            <div class="alert alert-danger mb-4">
+                @errorMessage
+            </div>
+        }
+
         <form @onsubmit="HandleSubmit">
             <!-- Name Input -->
             <div class="form-group mb-3">
@@ -30,7 +38,7 @@
 
             <!-- Buttons -->
             <div class="d-flex justify-content-between">
-                <button type="submit" class="btn btn-primary">Create User</button>
+                <button type="submit" class="btn btn-primary">Add User</button>
                 <button type="button" class="btn btn-outline-secondary" @onclick="Cancel">Cancel</button>
             </div>
         </form>
@@ -39,9 +47,13 @@
 
 @code {
     private User NewUser = new User();
+    private bool showError = false;
+    private string errorMessage = string.Empty;
 
     private async Task HandleSubmit()
     {
+        showError = false; // Xatolik xabarini yashirish
+
         try
         {
             await userService.CreateAsync(NewUser);
@@ -49,7 +61,8 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Xatolik yuz berdi: {ex.Message}");
+            showError = true; // Xatolik xabarini ko'rsatish
+            errorMessage = ex.Message; // Xatolik xabarini o'rnatish
         }
     }
 
