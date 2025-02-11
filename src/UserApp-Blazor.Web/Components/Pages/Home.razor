@@ -1,6 +1,12 @@
 ﻿@page "/"
-<h3>Home</h3>
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
 
 @code {
-
+    protected override void OnInitialized()
+    {
+        // Asosiy sahifaga kirganda /users sahifasiga yo'naltirish
+        navigationManager.NavigateTo("/users");
+    }
 }
