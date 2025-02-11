@@ -1,8 +1,11 @@
 ﻿@page "/users"
-
 @using UserApp_Blazor.Domain.Entities
+@using UserApp_Blazor.Web.Components.Pages.Commons
 @using UserApp_Blazor.Web.Service.Services
-@inject IUserService userService;
+@inject NavigationManager navigationManager
+@inject IUserService userService
+@rendermode InteractiveServer
+
 <h3>Users</h3>
 
 <!-- Foydalanuvchilar ro'yxati -->
@@ -29,7 +32,7 @@
                         <td>@user.About</td>
                         <td>
                             <button class="btn btn-primary">Edit</button>
-                            <button class="btn btn-danger">Delete</button>
+                            <button class="btn btn-danger" type="button" @onclick="() => ShowConfirmationDialog(user.Id)">Delete</button>
                         </td>
                     </tr>
                 }
@@ -44,8 +47,16 @@
     </table>
 </div>
 
+<!-- Confirmation Dialog -->
+@if (showConfirmationDialog)
+{
+    <ConfirmationDialog OnConfirmation="HandleConfirmation" />
+}
+
 @code {
     private IEnumerable<User> users = Enumerable.Empty<User>();
+    private bool showConfirmationDialog = false;
+    private long userIdToDelete;
 
     protected override async Task OnInitializedAsync()
     {
@@ -54,22 +65,35 @@
 
     private async Task LoadUsers()
     {
-        users = (await userService.GetAllAsync());
+        users = await userService.GetAllAsync();
     }
 
-
-    private void EditUser(int userId)
+    private void ShowConfirmationDialog(long userId)
     {
-        //NavigationManager.NavigateTo($"/edit-user/{userId}");
+        userIdToDelete = userId;
+        showConfirmationDialog = true; // Dialogni ko'rsatish
     }
 
-    private void DeleteUser(int userId)
+    private async Task HandleConfirmation(bool isConfirmed)
     {
-        // var user = Users.FirstOrDefault(u => u.Id == userId);
-        // if (user != null)
-        // {
-        //     await UserService.DeleteAsync(userId);
-        //     await LoadUsers();
-        // }
+        showConfirmationDialog = false; // Dialogni yopish
+
+        if (isConfirmed)
+        {
+            await DeleteUser(userIdToDelete); // Agar foydalanuvchi tasdiqlasa, o'chirish
+        }
+    }
+
+    private async Task DeleteUser(long userId)
+    {
+        try
+        {
+            await userService.DeleteAsync(userId);
+            await LoadUsers(); // Ro'yxatni yangilash
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Xatolik yuz berdi: {ex.Message}");
+        }
     }
 }
