@@ -1,11 +1,10 @@
 ﻿@page "/users"
-
 @using UserApp_Blazor.Domain.Entities
+@using UserApp_Blazor.Web.Components.Pages.Commons
 @using UserApp_Blazor.Web.Service.Services
 @inject NavigationManager navigationManager
-@inject IUserService userService;
+@inject IUserService userService
 @rendermode InteractiveServer
-
 
 <h3>Users</h3>
 
@@ -33,7 +32,7 @@
                         <td>@user.About</td>
                         <td>
                             <button class="btn btn-primary">Edit</button>
-                            <button class="btn btn-danger" type="button" @onclick="() => DeleteUser(user.Id)">Delete</button>
+                            <button class="btn btn-danger" type="button" @onclick="() => ShowConfirmationDialog(user.Id)">Delete</button>
                         </td>
                     </tr>
                 }
@@ -48,8 +47,16 @@
     </table>
 </div>
 
+<!-- Confirmation Dialog -->
+@if (showConfirmationDialog)
+{
+    <ConfirmationDialog OnConfirmation="HandleConfirmation" />
+}
+
 @code {
     private IEnumerable<User> users = Enumerable.Empty<User>();
+    private bool showConfirmationDialog = false;
+    private long userIdToDelete;
 
     protected override async Task OnInitializedAsync()
     {
@@ -58,13 +65,23 @@
 
     private async Task LoadUsers()
     {
-        users = (await userService.GetAllAsync());
+        users = await userService.GetAllAsync();
     }
 
-
-    private void EditUser(int userId)
+    private void ShowConfirmationDialog(long userId)
     {
-        //NavigationManager.NavigateTo($"/edit-user/{userId}");
+        userIdToDelete = userId;
+        showConfirmationDialog = true; // Dialogni ko'rsatish
+    }
+
+    private async Task HandleConfirmation(bool isConfirmed)
+    {
+        showConfirmationDialog = false; // Dialogni yopish
+
+        if (isConfirmed)
+        {
+            await DeleteUser(userIdToDelete); // Agar foydalanuvchi tasdiqlasa, o'chirish
+        }
     }
 
     private async Task DeleteUser(long userId)
@@ -72,9 +89,7 @@
         try
         {
             await userService.DeleteAsync(userId);
-            // navigationManager.NavigateTo("/users", true);
-            // await OnUserDeleted.InvokeAsync(userId);
-            await LoadUsers();
+            await LoadUsers(); // Ro'yxatni yangilash
         }
         catch (Exception ex)
         {
