@@ -2,7 +2,11 @@
 
 @using UserApp_Blazor.Domain.Entities
 @using UserApp_Blazor.Web.Service.Services
+@inject NavigationManager navigationManager
 @inject IUserService userService;
+@rendermode InteractiveServer
+
+
 <h3>Users</h3>
 
 <!-- Foydalanuvchilar ro'yxati -->
@@ -29,7 +33,7 @@
                         <td>@user.About</td>
                         <td>
                             <button class="btn btn-primary">Edit</button>
-                            <button class="btn btn-danger">Delete</button>
+                            <button class="btn btn-danger" type="button" @onclick="() => DeleteUser(user.Id)">Delete</button>
                         </td>
                     </tr>
                 }
@@ -63,13 +67,18 @@
         //NavigationManager.NavigateTo($"/edit-user/{userId}");
     }
 
-    private void DeleteUser(int userId)
+    private async Task DeleteUser(long userId)
     {
-        // var user = Users.FirstOrDefault(u => u.Id == userId);
-        // if (user != null)
-        // {
-        //     await UserService.DeleteAsync(userId);
-        //     await LoadUsers();
-        // }
+        try
+        {
+            await userService.DeleteAsync(userId);
+            // navigationManager.NavigateTo("/users", true);
+            // await OnUserDeleted.InvokeAsync(userId);
+            await LoadUsers();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Xatolik yuz berdi: {ex.Message}");
+        }
     }
 }
