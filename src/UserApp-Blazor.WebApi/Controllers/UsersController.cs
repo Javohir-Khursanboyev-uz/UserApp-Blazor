@@ -17,7 +17,6 @@ public class UsersController(IUserService userService) : ControllerBase
         });
     }
 
-
     [HttpPut("{id:long}")]
     public async Task<IActionResult> PutAsync(long id, User updateModel)
     {

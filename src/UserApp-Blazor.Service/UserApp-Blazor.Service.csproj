@@ -10,6 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\UserApp-Blazor.Data\UserApp-Blazor.Data.csproj" />
     <ProjectReference Include="..\UserApp-Blazor.Domain\UserApp-Blazor.Domain.csproj" />
+    <ProjectReference Include="..\UserApp-Blazor.Shared\UserApp-Blazor.Shared.csproj" />
   </ItemGroup>
 
 </Project>
