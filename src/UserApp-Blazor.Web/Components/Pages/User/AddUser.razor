@@ -1,0 +1,16 @@
+﻿@page "/add-user"
+@rendermode InteractiveServer
+@inject NavigationManager navigationManager
+
+<h1>Create new User</h1>
+
+
+<button class="btn btn-primary" @onclick="Cancel">Back</button>
+
+@code {
+
+    private void Cancel()
+    {
+        navigationManager.NavigateTo("/");
+    }
+}
