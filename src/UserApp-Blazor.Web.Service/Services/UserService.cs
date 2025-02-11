@@ -17,22 +17,41 @@ public class UserService : IUserService
     {
         var response = await httpClient.PostAsJsonAsync(baseUri, user);
         response.EnsureSuccessStatusCode();
-        return (await response.Content.ReadFromJsonAsync<User>())!;
+
+        var apiResponse = await response.Content.ReadFromJsonAsync<Response>();
+        if (apiResponse is not null && apiResponse.Data is not null)
+        {
+            var userJson = System.Text.Json.JsonSerializer.Serialize(apiResponse.Data);
+            return System.Text.Json.JsonSerializer.Deserialize<User>(userJson)!;
+        }
+
+        throw new Exception("Failed to create user.");
     }
 
     public async Task<User> UpdateAsync(long id, User user)
     {
-        var updateUri = $"{baseUri}/{id}";
-        var response = await httpClient.PutAsJsonAsync(updateUri, user);
+        var response = await httpClient.PutAsJsonAsync($"{baseUri}/{id}", user);
         response.EnsureSuccessStatusCode();
-        return (await response.Content.ReadFromJsonAsync<User>())!;
+
+        var apiResponse = await response.Content.ReadFromJsonAsync<Response>();
+
+        if (apiResponse is not null && apiResponse.Data is not null)
+        {
+            var userJson = System.Text.Json.JsonSerializer.Serialize(apiResponse.Data);
+            return System.Text.Json.JsonSerializer.Deserialize<User>(userJson)!;
+        }
+
+        throw new Exception("Failed to update user.");
     }
 
     public async Task<bool> DeleteAsync(long id)
     {
-        var deleteUri = $"{baseUri}/{id}";
-        var response = await httpClient.DeleteAsync(deleteUri);
-        return response.IsSuccessStatusCode;
+        var response = await httpClient.DeleteAsync($"{baseUri}/{id}");
+        response.EnsureSuccessStatusCode();
+
+        var apiResponse = await response.Content.ReadFromJsonAsync<Response>();
+
+        return apiResponse is not null && apiResponse.StatusCode == 200;
     }
 
     public async Task<IEnumerable<User>> GetAllAsync()

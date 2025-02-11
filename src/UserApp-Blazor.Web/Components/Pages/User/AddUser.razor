@@ -1,16 +1,60 @@
 ﻿@page "/add-user"
-@rendermode InteractiveServer
+@using UserApp_Blazor.Domain.Entities
+@using UserApp_Blazor.Web.Service.Services
+@inject IUserService userService
 @inject NavigationManager navigationManager
+@rendermode InteractiveServer
 
-<h1>Create new User</h1>
+<div class="create-user-container">
+    <div class="card shadow-lg p-4">
+        <h3 class="text-center mb-4">Create New User</h3>
 
+        <form @onsubmit="HandleSubmit">
+            <!-- Name Input -->
+            <div class="form-group mb-3">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="name" @bind="NewUser.Name" required />
+            </div>
 
-<button class="btn btn-primary" @onclick="Cancel">Back</button>
+            <!-- Email Input -->
+            <div class="form-group mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" @bind="NewUser.Email" required />
+            </div>
+
+            <!-- About Input -->
+            <div class="form-group mb-4">
+                <label for="about" class="form-label">About</label>
+                <textarea class="form-control" id="about" @bind="NewUser.About" rows="3"></textarea>
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Create User</button>
+                <button type="button" class="btn btn-outline-secondary" @onclick="Cancel">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 @code {
+    private User NewUser = new User();
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            await userService.CreateAsync(NewUser);
+            navigationManager.NavigateTo("/users"); // Foydalanuvchilar ro'yxatiga qaytish
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Xatolik yuz berdi: {ex.Message}");
+        }
+    }
 
     private void Cancel()
     {
-        navigationManager.NavigateTo("/");
+        navigationManager.NavigateTo("/users"); // Foydalanuvchilar ro'yxatiga qaytish
     }
 }
