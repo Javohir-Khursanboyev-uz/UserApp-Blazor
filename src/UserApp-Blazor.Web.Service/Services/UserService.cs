@@ -44,9 +44,10 @@ public class UserService : IUserService
     public async Task<bool> DeleteAsync(long id)
     {
         var response = await httpClient.DeleteAsync($"{baseUri}/{id}");
-        response.EnsureSuccessStatusCode();
-
         var apiResponse = await response.Content.ReadFromJsonAsync<Response>();
+
+        if (!response.IsSuccessStatusCode || apiResponse is null)
+            throw new Exception(apiResponse?.Message ?? "Failed to fetch users.");
 
         return apiResponse is not null && apiResponse.StatusCode == 200;
     }
