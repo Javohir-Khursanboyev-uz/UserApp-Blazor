@@ -4,13 +4,8 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>UserApp-Blazor.Web</RootNamespace>
+    <RootNamespace>UserApp-Blazor.Web2</RootNamespace>
     <AssemblyName>$(AssemblyName.Replace(' ', '_'))</AssemblyName>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\UserApp-Blazor.Shared\UserApp-Blazor.Shared.csproj" />
-    <ProjectReference Include="..\UserApp-Blazor.Web.Service\UserApp-Blazor.Web.Service.csproj" />
-  </ItemGroup>
 
 </Project>

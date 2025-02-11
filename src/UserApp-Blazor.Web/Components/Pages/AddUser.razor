@@ -1,5 +1,52 @@
-﻿<h3>AddUser</h3>
+﻿@page "/add-user"
+@using UserApp_Blazor.Domain.Entities
+@using UserApp_Blazor.Web.Service.Services
+@inject IUserService UserService
+@inject NavigationManager NavigationManager
+
+<h3 class="text-center mb-4">Add New User</h3>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form @onsubmit="HandleSubmit">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" class="form-control" id="name" @bind="NewUser.Name" required />
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" id="email" @bind="NewUser.Email" required />
+            </div>
+            <div class="form-group">
+                <label for="about">About</label>
+                <textarea class="form-control" id="about" @bind="NewUser.About"></textarea>
+            </div>
+            <div class="form-group text-center">
+                <button type="submit" class="btn btn-primary">Add User</button>
+                <button type="button" class="btn btn-secondary ml-2" @onclick="Cancel">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 @code {
+    private User NewUser = new User();
 
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            await UserService.CreateAsync(NewUser);
+            NavigationManager.NavigateTo("/Users"); // Foydalanuvchilar ro'yxatiga qaytish
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Xatolik yuz berdi: {ex.Message}");
+        }
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/Users"); // Foydalanuvchilar ro'yxatiga qaytish
+    }
 }
