@@ -4,8 +4,13 @@
     <TargetFramework>net9.0</TargetFramework>
     <RootNamespace>UserApp_Blazor.Service</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\UserApp-Blazor.Data\UserApp-Blazor.Data.csproj" />

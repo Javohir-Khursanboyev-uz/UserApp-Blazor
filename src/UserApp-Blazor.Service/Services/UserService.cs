@@ -1,6 +1,8 @@
 ﻿using UserApp_Blazor.Domain.Entities;
 using UserApp_Blazor.Data.Repositories;
 using UserApp_Blazor.Shared.Exceptions;
+using UserApp_Blazor.Service.Configurations;
+using UserApp_Blazor.Service.Extensions;
 
 namespace UserApp_Blazor.Service.Services;
 
@@ -29,13 +31,13 @@ public class UserService (IUserRepository userRepository) : IUserService
         return await userRepository.DeleteAsync(id);
     }
 
-    public async Task<IEnumerable<User>> GetAllAsync(string? search = null)
+    public async Task<IEnumerable<User>> GetAllAsync(PaginationParams @params, string search = null)
     {
         var users = await userRepository.SelectAllAsync();
         if (!string.IsNullOrEmpty(search))
             users = users.Where(u =>u.Name.Contains(search, StringComparison.OrdinalIgnoreCase) || 
             u.Email.Contains(search, StringComparison.OrdinalIgnoreCase));
         
-        return users;
+        return users.ToPaginateAsEnumerable(@params);
     }
 }
