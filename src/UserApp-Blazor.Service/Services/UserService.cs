@@ -29,8 +29,13 @@ public class UserService (IUserRepository userRepository) : IUserService
         return await userRepository.DeleteAsync(id);
     }
 
-    public async Task<IEnumerable<User>> GetAllAsync()
+    public async Task<IEnumerable<User>> GetAllAsync(string? search = null)
     {
-        return await userRepository.SelectAllAsync();
+        var users = await userRepository.SelectAllAsync();
+        if (!string.IsNullOrEmpty(search))
+            users = users.Where(u =>u.Name.Contains(search, StringComparison.OrdinalIgnoreCase) || 
+            u.Email.Contains(search, StringComparison.OrdinalIgnoreCase));
+        
+        return users;
     }
 }

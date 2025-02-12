@@ -41,13 +41,13 @@ public class UsersController(IUserService userService) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllAsync()
+    public async Task<IActionResult> GetAllAsync([FromQuery] string search = null)
     {
         return Ok(new Response
         {
             StatusCode = 200,
             Message = "Succes",
-            Data = await userService.GetAllAsync()
+            Data = await userService.GetAllAsync(search)
         });
     }
 }

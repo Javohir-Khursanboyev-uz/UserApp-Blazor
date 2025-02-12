@@ -8,6 +8,12 @@
 
 <h3>Users</h3>
 
+<!-- Qidiruv qutisi -->
+<div class="mb-3">
+    <input type="text" class="form-control" placeholder="Search users..."
+           @bind="searchTerm" @onkeyup="OnKeyUp" />
+</div>
+
 <!-- Xatolik xabari -->
 @if (showError)
 {
@@ -67,6 +73,7 @@
     private long userIdToDelete;
     private bool showError = false;
     private string errorMessage = string.Empty;
+    private string searchTerm = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -75,7 +82,15 @@
 
     private async Task LoadUsers()
     {
-        users = await userService.GetAllAsync();
+        users = await userService.GetAllAsync(searchTerm);
+    }
+
+    private async Task OnKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter") // Agar Enter bosilsa
+        {
+            await LoadUsers(); // Qidiruvni amalga oshirish
+        }
     }
 
     private void ShowConfirmationDialog(long userId)
@@ -90,10 +105,12 @@
 
         if (isConfirmed)
         {
-            try{
-
+            try
+            {
                 await DeleteUser(userIdToDelete); // Agar foydalanuvchi tasdiqlasa, o'chirish
-            }catch(Exception ex){
+            }
+            catch (Exception ex)
+            {
                 showError = true; // Xatolik xabarini ko'rsatish
                 errorMessage = ex.Message; // Xatolik xabarini o'rnatish
             }
