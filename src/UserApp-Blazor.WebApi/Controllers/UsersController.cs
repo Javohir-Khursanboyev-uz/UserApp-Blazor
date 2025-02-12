@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using UserApp_Blazor.Domain.Entities;
 using UserApp_Blazor.Service.Configurations;
 using UserApp_Blazor.Service.Services;
@@ -44,11 +45,15 @@ public class UsersController(IUserService userService) : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllAsync([FromQuery] PaginationParams @params, [FromQuery] string search = null)
     {
+        var (users, metaData) = await userService.GetAllAsync(@params, search);
+
+        Response?.Headers?.Add("X-Pagination", JsonConvert.SerializeObject(metaData));
+
         return Ok(new Response
         {
             StatusCode = 200,
-            Message = "Succes",
-            Data = await userService.GetAllAsync(@params, search)
+            Message = "Success",
+            Data = users
         });
     }
 }
