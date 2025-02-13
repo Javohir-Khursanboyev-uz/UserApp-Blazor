@@ -31,7 +31,7 @@ public class UserService (IUserRepository userRepository) : IUserService
         return await userRepository.DeleteAsync(id);
     }
 
-    public async Task<(IEnumerable<User>, PaginationMetaData)> GetAllAsync(PaginationParams @params, string search = null)
+    public async Task<IEnumerable<User>> GetAllAsync(PaginationParams @params, string search = null)
     {
         var users = await userRepository.SelectAllAsync();
         if (!string.IsNullOrEmpty(search))

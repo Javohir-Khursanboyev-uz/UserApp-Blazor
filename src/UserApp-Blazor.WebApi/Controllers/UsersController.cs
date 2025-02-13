@@ -45,15 +45,11 @@ public class UsersController(IUserService userService) : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllAsync([FromQuery] PaginationParams @params, [FromQuery] string search = null)
     {
-        var (users, metaData) = await userService.GetAllAsync(@params, search);
-
-        Response?.Headers?.Add("X-Pagination", JsonConvert.SerializeObject(metaData));
-
         return Ok(new Response
         {
             StatusCode = 200,
             Message = "Success",
-            Data = users
+            Data = await userService.GetAllAsync(@params, search)
         });
     }
 }

@@ -4,16 +4,12 @@ public class PaginationMetaData
 {
     public PaginationMetaData(int totalCount, PaginationParams @params)
     {
-        TotalCount = totalCount;
-        PageSize = @params.PageSize;
+        TotalPages = Convert.ToInt32(Math.Ceiling(totalCount / (decimal)@params.PageSize));
         CurrentPage = @params.PageIndex;
-        TotalPages = (int)Math.Ceiling(totalCount / (double)@params.PageSize);
     }
 
-    public int TotalCount { get; }
-    public int PageSize { get; }
-    public int CurrentPage { get; }
-    public int TotalPages { get; }
+    public int TotalPages { get; set; }
+    public int CurrentPage { get; set; }
     public bool HasPrevious => CurrentPage > 1;
     public bool HasNext => CurrentPage < TotalPages;
 }
