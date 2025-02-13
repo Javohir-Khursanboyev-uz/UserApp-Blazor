@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using UserApp_Blazor.Domain.Entities;
+using UserApp_Blazor.Service.Configurations;
 using UserApp_Blazor.Service.Services;
 
 [Route("api/[controller]")]
@@ -41,13 +43,13 @@ public class UsersController(IUserService userService) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllAsync()
+    public async Task<IActionResult> GetAllAsync([FromQuery] PaginationParams @params, [FromQuery] string search = null)
     {
         return Ok(new Response
         {
             StatusCode = 200,
-            Message = "Succes",
-            Data = await userService.GetAllAsync()
+            Message = "Success",
+            Data = await userService.GetAllAsync(@params, search)
         });
     }
 }

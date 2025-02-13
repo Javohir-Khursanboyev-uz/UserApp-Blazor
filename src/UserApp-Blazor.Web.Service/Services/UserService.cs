@@ -52,9 +52,10 @@ public class UserService : IUserService
         return apiResponse is not null && apiResponse.StatusCode == 200;
     }
 
-    public async Task<IEnumerable<User>> GetAllAsync()
+    public async Task<IEnumerable<User>> GetAllAsync(string? search = null)
     {
-        var response = await httpClient.GetFromJsonAsync<Response>(baseUri);
+        var uri = string.IsNullOrWhiteSpace(search) ? baseUri : $"{baseUri}?search={Uri.EscapeDataString(search)}";
+        var response = await httpClient.GetFromJsonAsync<Response>(uri);
         if (response is not null)
         {
             var usersJson = System.Text.Json.JsonSerializer.Serialize(response.Data);
