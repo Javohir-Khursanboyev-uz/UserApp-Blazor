@@ -84,7 +84,7 @@
 
     private async Task LoadUsers()
     {
-        users = await userService.GetAllAsync(searchTerm);
+        users = (await userService.GetAllAsync(searchTerm)).Data;
     }
 
     private async Task OnKeyUp(KeyboardEventArgs e)

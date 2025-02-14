@@ -1,12 +1,12 @@
-﻿using UserApp_Blazor.Domain.Entities;
-using UserApp_Blazor.Data.Repositories;
-using UserApp_Blazor.Shared.Exceptions;
-using UserApp_Blazor.Service.Configurations;
+﻿using UserApp_Blazor.Data.Repositories;
+using UserApp_Blazor.Domain.Entities;
 using UserApp_Blazor.Service.Extensions;
+using UserApp_Blazor.Shared.Configurations;
+using UserApp_Blazor.Shared.Exceptions;
 
 namespace UserApp_Blazor.Service.Services;
 
-public class UserService (IUserRepository userRepository) : IUserService
+public class UserService(IUserRepository userRepository) : IUserService
 {
     public async Task<User> CreateAsync(User user)
     {
@@ -35,9 +35,9 @@ public class UserService (IUserRepository userRepository) : IUserService
     {
         var users = await userRepository.SelectAllAsync();
         if (!string.IsNullOrEmpty(search))
-            users = users.Where(u =>u.Name.Contains(search, StringComparison.OrdinalIgnoreCase) || 
+            users = users.Where(u => u.Name.Contains(search, StringComparison.OrdinalIgnoreCase) ||
             u.Email.Contains(search, StringComparison.OrdinalIgnoreCase));
-        
+
         return users.ToPaginateAsEnumerable(@params);
     }
 }

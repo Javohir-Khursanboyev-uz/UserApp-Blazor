@@ -2,18 +2,8 @@
 
 public class PaginationMetaData
 {
-    public PaginationMetaData(int totalCount, PaginationParams @params)
-    {
-        TotalCount = totalCount;
-        PageSize = @params.PageSize;
-        CurrentPage = @params.PageIndex;
-        TotalPages = (int)Math.Ceiling(totalCount / (double)@params.PageSize);
-    }
-
-    public int TotalCount { get; }
-    public int PageSize { get; }
-    public int CurrentPage { get; }
-    public int TotalPages { get; }
-    public bool HasPrevious => CurrentPage > 1;
-    public bool HasNext => CurrentPage < TotalPages;
+    public int TotalPages { get; set; }
+    public int CurrentPage { get; set; }
+    public bool HasPrevious { get; set; }
+    public bool HasNext { get; set; }
 }

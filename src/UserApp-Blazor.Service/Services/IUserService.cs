@@ -1,5 +1,5 @@
 ﻿using UserApp_Blazor.Domain.Entities;
-using UserApp_Blazor.Service.Configurations;
+using UserApp_Blazor.Shared.Configurations;
 
 namespace UserApp_Blazor.Service.Services;
 

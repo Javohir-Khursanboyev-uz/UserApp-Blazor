@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
-using UserApp_Blazor.Service.Configurations;
 using UserApp_Blazor.Service.Helpers;
+using UserApp_Blazor.Shared.Configurations;
 
 namespace UserApp_Blazor.Service.Extensions;
 
@@ -10,7 +10,13 @@ public static class CollectionExtensions
     {
         int totalCount = source.Count();
 
-        var json = JsonConvert.SerializeObject(new PaginationMetaData(totalCount, @params));
+        var paginationMetaData = new PaginationMetaData();
+        paginationMetaData.TotalPages = Convert.ToInt32(Math.Ceiling(totalCount / (decimal)@params.PageSize));
+        paginationMetaData.CurrentPage = @params.PageIndex;
+        paginationMetaData.HasPrevious = @params.PageIndex > 1;
+        paginationMetaData.HasNext = @params.PageIndex < Convert.ToInt32(Math.Ceiling(totalCount / (decimal)@params.PageSize));
+
+        var json = JsonConvert.SerializeObject(paginationMetaData);
 
         HttpContextHelper.ResponseHeaders.Remove("X-Pagination");
         HttpContextHelper.ResponseHeaders?.Add("X-Pagination", json);

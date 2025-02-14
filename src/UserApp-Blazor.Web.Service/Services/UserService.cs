@@ -1,5 +1,8 @@
 ﻿using System.Net.Http.Json;
+using System.Text.Json;
 using UserApp_Blazor.Domain.Entities;
+using UserApp_Blazor.Shared.Configurations;
+using UserApp_Blazor.Shared.Models;
 
 namespace UserApp_Blazor.Web.Service.Services;
 
@@ -52,16 +55,35 @@ public class UserService : IUserService
         return apiResponse is not null && apiResponse.StatusCode == 200;
     }
 
-    public async Task<IEnumerable<User>> GetAllAsync(string? search = null)
+    public async Task<PaginatedResponse<User>> GetAllAsync(string? search = null)
     {
         var uri = string.IsNullOrWhiteSpace(search) ? baseUri : $"{baseUri}?search={Uri.EscapeDataString(search)}";
-        var response = await httpClient.GetFromJsonAsync<Response>(uri);
-        if (response is not null)
+        var response = await httpClient.GetAsync(uri);
+        if (!response.IsSuccessStatusCode)
+            return new PaginatedResponse<User>();
+
+        // X-Pagination headerni olish
+        PaginationMetaData pagination = null;
+
+        if (response.Headers.TryGetValues("X-Pagination", out var values))
         {
-            var usersJson = System.Text.Json.JsonSerializer.Serialize(response.Data);
-            return System.Text.Json.JsonSerializer.Deserialize<IEnumerable<User>>(usersJson) ?? Enumerable.Empty<User>(); ;
+            var paginationJson = values.FirstOrDefault();
+            if (!string.IsNullOrEmpty(paginationJson))
+            {
+                pagination = JsonSerializer.Deserialize<PaginationMetaData>(paginationJson);
+            }
         }
 
-        return Enumerable.Empty<User>();
+        // JSON javobni Response obyektiga deserialize qilish
+        var apiResponse = await httpClient.GetFromJsonAsync<Response>(uri);
+        if (apiResponse is not null)
+        {
+            var usersJson = JsonSerializer.Serialize(apiResponse.Data);
+            var users = JsonSerializer.Deserialize<IEnumerable<User>>(usersJson) ?? Enumerable.Empty<User>();
+
+            return new PaginatedResponse<User> { Data = users, Pagination = pagination };
+        }
+
+        return new PaginatedResponse<User>();
     }
-}   
+}
