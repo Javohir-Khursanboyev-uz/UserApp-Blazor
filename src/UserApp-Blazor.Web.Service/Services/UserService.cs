@@ -55,9 +55,9 @@ public class UserService : IUserService
         return apiResponse is not null && apiResponse.StatusCode == 200;
     }
 
-    public async Task<PaginatedResponse<User>> GetAllAsync(string? search = null)
+    public async Task<PaginatedResponse<User>> GetAllAsync(PaginationParams @params, string? search = null)
     {
-        var uri = string.IsNullOrWhiteSpace(search) ? baseUri : $"{baseUri}?search={Uri.EscapeDataString(search)}";
+        var uri = $"{baseUri}?search={Uri.EscapeDataString(search ?? "")}&pageIndex={@params.PageIndex}&pageSize={@params.PageSize}";
         var response = await httpClient.GetAsync(uri);
         if (!response.IsSuccessStatusCode)
             return new PaginatedResponse<User>();

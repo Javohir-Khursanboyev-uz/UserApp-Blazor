@@ -1,5 +1,6 @@
 ﻿@page "/users"
 @using UserApp_Blazor.Domain.Entities
+@using UserApp_Blazor.Shared.Configurations
 @using UserApp_Blazor.Web.Components.Pages.Commons
 @using UserApp_Blazor.Web.Service.Services
 @inject NavigationManager navigationManager
@@ -11,7 +12,7 @@
 <!-- Qidiruv qutisi -->
 <div class="mb-3">
     <input type="text" class="form-control" placeholder="Search users..."
-           @bind="searchTerm" @onkeyup="OnKeyUp" />
+    @bind="searchTerm" @onkeyup="OnKeyUp" />
 </div>
 
 <!-- Xatolik xabari -->
@@ -61,7 +62,36 @@
     </table>
 </div>
 
+<!-- Pagination Controls -->
+@if (pagination != null)
+{
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            <!-- Previous Button -->
+            <li class="page-item @(pagination.HasPrevious ? "" : "disabled")">
+                <button class="page-link" @onclick="GoToPreviousPage" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </button>
+            </li>
 
+            <!-- Page Numbers -->
+            @for (int i = 1; i <= pagination.TotalPages; i++)
+            {
+                var pageNumber = i; // Yangi o‘zgaruvchi
+                <li class="page-item @(pageNumber == pagination.CurrentPage ? "active" : "")">
+                    <button class="page-link" @onclick="@(() => GoToPage(pageNumber))">@pageNumber</button>
+                </li>
+            }
+
+            <!-- Next Button -->
+            <li class="page-item @(pagination.HasNext ? "" : "disabled")">
+                <button class="page-link" @onclick="GoToNextPage" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </button>
+            </li>
+        </ul>
+    </nav>
+}
 
 <!-- Confirmation Dialog -->
 @if (showConfirmationDialog)
@@ -71,11 +101,15 @@
 
 @code {
     private IEnumerable<User> users = Enumerable.Empty<User>();
+    private PaginationMetaData pagination = new ();
     private bool showConfirmationDialog = false;
     private long userIdToDelete;
     private bool showError = false;
     private string errorMessage = string.Empty;
     private string searchTerm = string.Empty;
+
+    // Add PaginationParams
+    private PaginationParams paginationParams = new PaginationParams { PageSize = 1 };
 
     protected override async Task OnInitializedAsync()
     {
@@ -84,7 +118,9 @@
 
     private async Task LoadUsers()
     {
-        users = (await userService.GetAllAsync(searchTerm)).Data;
+        var response = await userService.GetAllAsync(paginationParams, searchTerm);
+        users = response.Data;
+        pagination = response.Pagination;
     }
 
     private async Task OnKeyUp(KeyboardEventArgs e)
@@ -129,6 +165,30 @@
         catch (Exception ex)
         {
             Console.WriteLine($"Xatolik yuz berdi: {ex.Message}");
+        }
+    }
+
+    private async Task GoToPage(int page)
+    {
+        paginationParams.PageIndex = page;
+        await LoadUsers(); // Load users for the selected page
+    }
+
+    private async Task GoToPreviousPage()
+    {
+        if (pagination.HasPrevious)
+        {
+            paginationParams.PageIndex--;
+            await LoadUsers(); // Load users for the previous page
+        }
+    }
+
+    private async Task GoToNextPage()
+    {
+        if (pagination.HasNext)
+        {
+            paginationParams.PageIndex++;
+            await LoadUsers(); // Load users for the next page
         }
     }
 }
