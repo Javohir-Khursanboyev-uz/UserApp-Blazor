@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
-using UserApp_Blazor.Web.Service.Services;
 using Microsoft.Extensions.DependencyInjection;
+using UserApp_Blazor.Web.Service.Services;
 
 namespace UserApp_Blazor.Web.Service.Extensions;
 

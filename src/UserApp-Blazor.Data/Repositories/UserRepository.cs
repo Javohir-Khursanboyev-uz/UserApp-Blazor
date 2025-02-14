@@ -1,5 +1,5 @@
-﻿using UserApp_Blazor.Data.Contexts;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using UserApp_Blazor.Data.Contexts;
 using UserApp_Blazor.Domain.Entities;
 
 namespace UserApp_Blazor.Data.Repositories;

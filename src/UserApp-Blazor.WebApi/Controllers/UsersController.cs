@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using UserApp_Blazor.Domain.Entities;
-using UserApp_Blazor.Service.Configurations;
 using UserApp_Blazor.Service.Services;
+using UserApp_Blazor.Shared.Configurations;
 
 [Route("api/[controller]")]
 [ApiController]

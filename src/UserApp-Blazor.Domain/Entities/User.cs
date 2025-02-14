@@ -2,7 +2,7 @@
 
 namespace UserApp_Blazor.Domain.Entities;
 
-public class User 
+public class User
 {
     [JsonPropertyName("id")]
     public long Id { get; set; }
