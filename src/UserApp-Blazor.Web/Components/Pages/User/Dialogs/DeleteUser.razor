@@ -1,4 +1,6 @@
-﻿<div class="confirmation-dialog">
+﻿@rendermode InteractiveServer
+
+<div class="confirmation-dialog">
     <div class="dialog-content">
         <p>Are you sure you want to delete this user?</p>
         <button class="btn btn-danger" @onclick="Confirm">Yes</button>
@@ -29,15 +31,15 @@
 
 @code {
     [Parameter]
-    public EventCallback<bool> OnConfirmation { get; set; }
+    public EventCallback<bool> OnUserDeleted { get; set; }
 
     private async Task Confirm()
     {
-        await OnConfirmation.InvokeAsync(true); // "Yes" bosilganda
+        await OnUserDeleted.InvokeAsync(true); // "Yes" bosilganda
     }
 
     private async Task Cancel()
     {
-        await OnConfirmation.InvokeAsync(false); // "No" bosilganda
+        await OnUserDeleted.InvokeAsync(false); // "No" bosilganda
     }
 }

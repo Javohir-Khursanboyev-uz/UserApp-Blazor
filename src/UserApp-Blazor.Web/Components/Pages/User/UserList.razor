@@ -1,19 +1,22 @@
 ﻿@page "/users"
-@using UserApp_Blazor.Domain.Entities
-@using UserApp_Blazor.Shared.Configurations
-@using UserApp_Blazor.Web.Components.Pages.Commons
-@using UserApp_Blazor.Web.Service.Services
-@inject NavigationManager navigationManager
-@inject IUserService userService
 @rendermode InteractiveServer
+@inject IUserService userService
+@using UserApp_Blazor.Domain.Entities
+@using UserApp_Blazor.Web.Service.Services
+@using UserApp_Blazor.Shared.Configurations
+@inject NavigationManager navigationManager
+@using UserApp_Blazor.Web.Components.Pages.User.Dialogs
 
 <h3>Users</h3>
 
-<!-- Qidiruv qutisi -->
+<button class="btn btn-success mb-3" @onclick="ShowCreateDialog">Add User</button>
+
+<!-- Qidiruv -->
 <div class="mb-3">
     <input type="text" class="form-control" placeholder="Search users..."
     @bind="searchTerm" @onkeyup="OnKeyUp" />
 </div>
+
 
 <!-- Xatolik xabari -->
 @if (showError)
@@ -22,6 +25,7 @@
         @errorMessage
     </div>
 }
+
 
 <!-- Foydalanuvchilar ro'yxati -->
 <div class="table-responsive">
@@ -47,7 +51,7 @@
                         <td>@user.About</td>
                         <td>
                             <button class="btn btn-primary">Edit</button>
-                            <button class="btn btn-danger" type="button" @onclick="() => ShowConfirmationDialog(user.Id)">Delete</button>
+                            <button class="btn btn-danger" type="button" @onclick="() => ShowDeleteDialog(user.Id)">Delete</button>
                         </td>
                     </tr>
                 }
@@ -61,6 +65,7 @@
         </tbody>
     </table>
 </div>
+
 
 <!-- Pagination Controls -->
 @if (pagination != null)
@@ -93,23 +98,31 @@
     </nav>
 }
 
-<!-- Confirmation Dialog -->
-@if (showConfirmationDialog)
+
+<!-- Delete Dialog -->
+@if (showDeleteDialog)
 {
-    <ConfirmationDialog OnConfirmation="HandleConfirmation" />
+    <DeleteUser OnUserDeleted="HandleDeleteUser" />
 }
 
+<!-- Create Dialog -->
+@if(showCreateDialog){
+    <CreateUser OnUserCreated="HandleCreateUser"></CreateUser>
+}
+
+
 @code {
-    private IEnumerable<User> users = Enumerable.Empty<User>();
-    private PaginationMetaData pagination = new ();
-    private bool showConfirmationDialog = false;
-    private long userIdToDelete;
+    private long userId;
     private bool showError = false;
     private string errorMessage = string.Empty;
+    private bool showDeleteDialog = false;
+    private bool showCreateDialog = false;
     private string searchTerm = string.Empty;
+    private PaginationMetaData pagination = new ();
+    private IEnumerable<User> users = Enumerable.Empty<User>();
 
     // Add PaginationParams
-    private PaginationParams paginationParams = new PaginationParams { PageSize = 1 };
+    private PaginationParams paginationParams = new PaginationParams { PageSize = 3 };
 
     protected override async Task OnInitializedAsync()
     {
@@ -131,40 +144,44 @@
         }
     }
 
-    private void ShowConfirmationDialog(long userId)
+    private void ShowCreateDialog()
     {
-        userIdToDelete = userId;
-        showConfirmationDialog = true; // Dialogni ko'rsatish
+        showCreateDialog = true;
     }
 
-    private async Task HandleConfirmation(bool isConfirmed)
+    private async Task HandleCreateUser(User newUser)
     {
-        showConfirmationDialog = false; // Dialogni yopish
+        if(newUser is not null){
+            await userService.CreateAsync(newUser);
+            showCreateDialog = false;
+            await LoadUsers();
+        }
+
+        showCreateDialog = false;
+    }
+
+    private void ShowDeleteDialog(long deletedUserId)
+    {
+        userId = deletedUserId;
+        showDeleteDialog = true; // Dialogni ko'rsatish
+    }
+
+    private async Task HandleDeleteUser(bool isConfirmed)
+    {
+        showDeleteDialog = false; // Dialogni yopish
 
         if (isConfirmed)
         {
             try
             {
-                await DeleteUser(userIdToDelete); // Agar foydalanuvchi tasdiqlasa, o'chirish
+                await userService.DeleteAsync(userId);
+                await LoadUsers(); // Ro'yxatni yangilash
             }
             catch (Exception ex)
             {
                 showError = true; // Xatolik xabarini ko'rsatish
                 errorMessage = ex.Message; // Xatolik xabarini o'rnatish
             }
-        }
-    }
-
-    private async Task DeleteUser(long userId)
-    {
-        try
-        {
-            await userService.DeleteAsync(userId);
-            await LoadUsers(); // Ro'yxatni yangilash
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Xatolik yuz berdi: {ex.Message}");
         }
     }
 

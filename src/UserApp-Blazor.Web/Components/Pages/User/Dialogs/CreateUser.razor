@@ -1,12 +1,8 @@
-﻿@page "/add-user"
+﻿@rendermode InteractiveServer
 @using UserApp_Blazor.Domain.Entities
-@using UserApp_Blazor.Web.Service.Services
-@inject IUserService userService
-@inject NavigationManager navigationManager
-@rendermode InteractiveServer
 
-<div class="create-user-container">
-    <div class="card shadow-lg p-4">
+<div class="confirmation-dialog">
+    <div class="dialog-content">
         <h3 class="text-center mb-4">Create New User</h3>
 
         <!-- Xatolik xabari -->
@@ -21,19 +17,19 @@
             <!-- Name Input -->
             <div class="form-group mb-3">
                 <label for="name" class="form-label">Name</label>
-                <input type="text" class="form-control" id="name" @bind="NewUser.Name" required />
+                <input type="text" class="form-control" id="name" @bind="newUser.Name" required />
             </div>
 
             <!-- Email Input -->
             <div class="form-group mb-3">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" @bind="NewUser.Email" required />
+                <input type="email" class="form-control" id="email" @bind="newUser.Email" required />
             </div>
 
             <!-- About Input -->
             <div class="form-group mb-4">
                 <label for="about" class="form-label">About</label>
-                <textarea class="form-control" id="about" @bind="NewUser.About" rows="3"></textarea>
+                <textarea class="form-control" id="about" @bind="newUser.About" rows="3"></textarea>
             </div>
 
             <!-- Buttons -->
@@ -45,29 +41,54 @@
     </div>
 </div>
 
+<style>
+    .confirmation-dialog {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .dialog-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 50%; /* Dialogni enini kattalashtirish */
+        max-width: 600px; /* Juda katta bo‘lib ketishidan himoya */
+        min-width: 400px; /* Juda kichik bo‘lib qolmasin */
+    }
+
+</style>
+
 @code {
-    private User NewUser = new User();
+    [Parameter]
+    public EventCallback<User> OnUserCreated { get; set; }
+
+    private User newUser = new();
     private bool showError = false;
     private string errorMessage = string.Empty;
 
     private async Task HandleSubmit()
     {
-        showError = false; // Xatolik xabarini yashirish
-
         try
         {
-            await userService.CreateAsync(NewUser);
-            navigationManager.NavigateTo("/users"); // Foydalanuvchilar ro'yxatiga qaytish
+            await OnUserCreated.InvokeAsync(newUser); 
         }
         catch (Exception ex)
         {
-            showError = true; // Xatolik xabarini ko'rsatish
+            showError = true; // Xatolikni ko'rsatish
             errorMessage = ex.Message; // Xatolik xabarini o'rnatish
         }
     }
 
-    private void Cancel()
+    private async Task Cancel()
     {
-        navigationManager.NavigateTo("/users"); // Foydalanuvchilar ro'yxatiga qaytish
+        await OnUserCreated.InvokeAsync(); 
     }
 }
