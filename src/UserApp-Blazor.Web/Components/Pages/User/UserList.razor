@@ -7,9 +7,10 @@
 @inject NavigationManager navigationManager
 @using UserApp_Blazor.Web.Components.Pages.User.Dialogs
 
-<h3>Users</h3>
-
-<button class="btn btn-success mb-3" @onclick="ShowCreateDialog">Add User</button>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="me-auto">Users</h3> <!-- Sarlavha va tugma o'rtasida bo'sh joy -->
+    <button class="btn btn-success" @onclick="ShowCreateDialog">Add User</button>
+</div>
 
 <!-- Qidiruv -->
 <div class="mb-3">
@@ -50,8 +51,8 @@
                         <td>@user.Email</td>
                         <td>@user.About</td>
                         <td>
-                            <button class="btn btn-primary">Edit</button>
-                            <button class="btn btn-danger" type="button" @onclick="() => ShowDeleteDialog(user.Id)">Delete</button>
+                            <button class="btn btn-primary" @onclick="() => ShowUpdateDialog(user)">Edit</button>
+                            <button class="btn btn-danger" @onclick="() => ShowDeleteDialog(user.Id)">Delete</button>
                         </td>
                     </tr>
                 }
@@ -106,17 +107,25 @@
 }
 
 <!-- Create Dialog -->
-@if(showCreateDialog){
+@if(showCreateDialog)
+{
     <CreateUser OnUserCreated="HandleCreateUser"></CreateUser>
 }
 
+<!-- Update Dialog -->
+@if (showUpdateDialog)
+{
+    <UpdateUser InitialUser="updatedUser" OnUserUpdated="HandleUpdateUser"></UpdateUser>
+}
 
 @code {
     private long userId;
+    private User updatedUser = new();
     private bool showError = false;
     private string errorMessage = string.Empty;
     private bool showDeleteDialog = false;
     private bool showCreateDialog = false;
+    private bool showUpdateDialog = false;
     private string searchTerm = string.Empty;
     private PaginationMetaData pagination = new ();
     private IEnumerable<User> users = Enumerable.Empty<User>();
@@ -183,6 +192,24 @@
                 errorMessage = ex.Message; // Xatolik xabarini o'rnatish
             }
         }
+    }
+
+    private void ShowUpdateDialog(User user)
+    {
+        userId = user.Id;
+        updatedUser = user;
+        showUpdateDialog = true; // Dialogni ko'rsatish
+    }
+
+    private async Task HandleUpdateUser(User user)
+    {
+        if(user is not null){
+            await userService.UpdateAsync(userId, user);
+            showUpdateDialog = false;
+            await LoadUsers();
+        }
+
+        showUpdateDialog = false;
     }
 
     private async Task GoToPage(int page)

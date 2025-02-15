@@ -20,7 +20,18 @@ public class UserService(IUserRepository userRepository) : IUserService
 
     public async Task<User> UpdateAsync(long id, User user)
     {
-        return await userRepository.UpdateAsync(id, user);
+        var existUser = (await userRepository.SelectAllAsync()).FirstOrDefault(u => u.Id == id)
+            ?? throw new NotFoundException($"User is not found");
+
+        var alreadyExistUser = (await userRepository.SelectAllAsync()).FirstOrDefault(u => u.Email == user.Email && u.Id != id);
+        if (alreadyExistUser is not null)
+            throw new AlreadyExistException($"User already exist with this Email {user.Email}");
+
+        existUser.Id = id;
+        existUser.Name = user.Name;
+        existUser.Email = user.Email;
+        existUser.About = user.About;
+        return await userRepository.UpdateAsync(id, existUser);
     }
 
     public async Task<bool> DeleteAsync(long id)

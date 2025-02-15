@@ -1,8 +1,8 @@
-﻿using System.Net.Http.Json;
-using System.Text.Json;
+﻿using System.Text.Json;
+using System.Net.Http.Json;
+using UserApp_Blazor.Shared.Models;
 using UserApp_Blazor.Domain.Entities;
 using UserApp_Blazor.Shared.Configurations;
-using UserApp_Blazor.Shared.Models;
 
 namespace UserApp_Blazor.Web.Service.Services;
 
@@ -31,17 +31,13 @@ public class UserService : IUserService
     public async Task<User> UpdateAsync(long id, User user)
     {
         var response = await httpClient.PutAsJsonAsync($"{baseUri}/{id}", user);
-        response.EnsureSuccessStatusCode();
-
         var apiResponse = await response.Content.ReadFromJsonAsync<Response>();
 
-        if (apiResponse is not null && apiResponse.Data is not null)
-        {
-            var userJson = System.Text.Json.JsonSerializer.Serialize(apiResponse.Data);
-            return System.Text.Json.JsonSerializer.Deserialize<User>(userJson)!;
-        }
-
-        throw new Exception(apiResponse?.Message);
+        if (!response.IsSuccessStatusCode || apiResponse is null)
+            throw new Exception(apiResponse?.Message ?? "Failed to fetch users.");
+   
+        var userJson = System.Text.Json.JsonSerializer.Serialize(apiResponse.Data);
+        return System.Text.Json.JsonSerializer.Deserialize<User>(userJson)!;
     }
 
     public async Task<bool> DeleteAsync(long id)

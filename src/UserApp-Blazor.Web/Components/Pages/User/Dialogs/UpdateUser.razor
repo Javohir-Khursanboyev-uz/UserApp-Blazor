@@ -1,0 +1,117 @@
+﻿@rendermode InteractiveServer
+@using UserApp_Blazor.Domain.Entities
+
+<div class="confirmation-dialog">
+    <div class="dialog-content">
+        <h3 class="text-center mb-4">Update User</h3>
+
+        <!-- Xatolik xabari -->
+        @if (showError)
+        {
+            <div class="alert alert-danger mb-4">
+                @errorMessage
+            </div>
+        }
+
+        <form @onsubmit="HandleSubmit">
+            <!-- Name Input -->
+            <div class="form-group mb-3">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="name" @bind="user.Name" placeholder="@initialUser.Name" required />
+            </div>
+
+            <!-- Email Input -->
+            <div class="form-group mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" @bind="user.Email" placeholder="@initialUser.Email" required />
+            </div>
+
+            <!-- About Input -->
+            <div class="form-group mb-4">
+                <label for="about" class="form-label">About</label>
+                <textarea class="form-control" id="about" @bind="user.About" placeholder="@initialUser.About" rows="3"></textarea>
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Saved</button>
+                <button type="button" class="btn btn-outline-secondary" @onclick="Cancel">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .confirmation-dialog {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .dialog-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 50%; /* Dialogni enini kattalashtirish */
+        max-width: 600px; /* Juda katta bo‘lib ketishidan himoya */
+        min-width: 400px; /* Juda kichik bo‘lib qolmasin */
+    }
+</style>
+
+@code {
+    [Parameter]
+    public EventCallback<User> OnUserUpdated { get; set; }
+
+    [Parameter]
+    public User InitialUser { get; set; } = new();
+
+    private User user = new();
+    private User initialUser = new();
+    private bool showError = false;
+    private string errorMessage = string.Empty;
+
+    protected override void OnParametersSet()
+    {
+        // InitialUser ma'lumotlarini user va initialUser ga nusxalash
+        user = new User
+            {
+                Id = InitialUser.Id,
+                Name = InitialUser.Name,
+                Email = InitialUser.Email,
+                About = InitialUser.About
+            };
+
+        initialUser = new User
+            {
+                Id = InitialUser.Id,
+                Name = InitialUser.Name,
+                Email = InitialUser.Email,
+                About = InitialUser.About
+            };
+    }
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            await OnUserUpdated.InvokeAsync(user); // Yangilangan foydalanuvchini yuborish
+        }
+        catch (Exception ex)
+        {
+            showError = true; // Xatolikni ko'rsatish
+            errorMessage = ex.Message; // Xatolik xabarini o'rnatish
+        }
+    }
+
+    private async Task Cancel()
+    {
+        await OnUserUpdated.InvokeAsync(); // Bekor qilish
+    }
+}
