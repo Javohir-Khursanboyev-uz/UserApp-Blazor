@@ -15,7 +15,6 @@ public class UserRepository(AppDbContext context) : IUserRepository
 
     public async Task<User> UpdateAsync(long id, User user)
     {
-        user.Id = id;
         var updatedUser = context.Users.Update(user).Entity;
         await context.SaveChangesAsync();
         return updatedUser;
