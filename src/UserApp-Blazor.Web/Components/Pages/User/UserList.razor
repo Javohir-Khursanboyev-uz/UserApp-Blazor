@@ -9,6 +9,8 @@
 
 <h3>Users</h3>
 
+<button class="btn btn-success mb-3" @onclick="ShowCreateDialog">Add User</button>
+
 <!-- Qidiruv -->
 <div class="mb-3">
     <input type="text" class="form-control" placeholder="Search users..."
@@ -97,10 +99,15 @@
 }
 
 
-<!-- Confirmation Dialog -->
+<!-- Delete Dialog -->
 @if (showDeleteDialog)
 {
     <DeleteUser OnUserDeleted="HandleDeleteUser" />
+}
+
+<!-- Create Dialog -->
+@if(showCreateDialog){
+    <CreateUser OnUserCreated="HandleCreateUser"></CreateUser>
 }
 
 
@@ -109,6 +116,7 @@
     private bool showError = false;
     private string errorMessage = string.Empty;
     private bool showDeleteDialog = false;
+    private bool showCreateDialog = false;
     private string searchTerm = string.Empty;
     private PaginationMetaData pagination = new ();
     private IEnumerable<User> users = Enumerable.Empty<User>();
@@ -134,6 +142,22 @@
         {
             await LoadUsers(); // Qidiruvni amalga oshirish
         }
+    }
+
+    private void ShowCreateDialog()
+    {
+        showCreateDialog = true;
+    }
+
+    private async Task HandleCreateUser(User newUser)
+    {
+        if(newUser is not null){
+            await userService.CreateAsync(newUser);
+            showCreateDialog = false;
+            await LoadUsers();
+        }
+
+        showCreateDialog = false;
     }
 
     private void ShowDeleteDialog(long deletedUserId)
