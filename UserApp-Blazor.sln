@@ -19,6 +19,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserApp-Blazor.Web", "src\U
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserApp-Blazor.Web.Service", "src\UserApp-Blazor.Web.Service\UserApp-Blazor.Web.Service.csproj", "{6A62E509-8747-40DA-AC5A-531EDBE76BC3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{1A3B4174-984A-417E-91D9-924FBE121A19}"
+	ProjectSection(SolutionItems) = preProject
+		About.txt = About.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
