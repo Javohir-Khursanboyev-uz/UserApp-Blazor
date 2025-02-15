@@ -1,9 +1,7 @@
 <H1> Screenshots </H1>
 
 ![image](https://github.com/user-attachments/assets/aac6e21e-8524-4f05-8089-0d8099b50e0b)
-
-
-
+<br> <br>
 ![image](https://github.com/user-attachments/assets/c40e7a14-e2bf-4ec2-8609-6025c766970a)
 
 ![image](https://github.com/user-attachments/assets/7e8112ac-d9a6-44ab-a7ac-4e875cb5eb13)
