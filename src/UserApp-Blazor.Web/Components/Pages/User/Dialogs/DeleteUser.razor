@@ -29,15 +29,15 @@
 
 @code {
     [Parameter]
-    public EventCallback<bool> OnConfirmation { get; set; }
+    public EventCallback<bool> OnUserDeleted { get; set; }
 
     private async Task Confirm()
     {
-        await OnConfirmation.InvokeAsync(true); // "Yes" bosilganda
+        await OnUserDeleted.InvokeAsync(true); // "Yes" bosilganda
     }
 
     private async Task Cancel()
     {
-        await OnConfirmation.InvokeAsync(false); // "No" bosilganda
+        await OnUserDeleted.InvokeAsync(false); // "No" bosilganda
     }
 }
